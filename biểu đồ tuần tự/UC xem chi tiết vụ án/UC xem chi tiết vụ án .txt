@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor User as Luật sư / Khách hàng
+    participant FE as CaseDetail.jsx
+    participant Controller as CaseController
+    participant Service as CaseService
+    participant Repo as CaseRepository
+
+    User->>FE: Nhấn vào một vụ án cụ thể
+    FE->>Controller: GET /api/cases/{id}
+    Controller->>Service: getCaseDetail(id)
+    Service->>Repo: findById(id)
+    Repo-->>Controller: Case Entity (gồm Updates & Documents)
+    Controller-->>FE: ApiResponse<CaseResponse>
+    FE->>User: Hiển thị thông tin vụ án & Timeline
