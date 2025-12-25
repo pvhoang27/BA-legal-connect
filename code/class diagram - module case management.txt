@@ -1,0 +1,68 @@
+classDiagram
+    class CaseController {
+        -CaseService caseService
+        +createCase(CreateCaseRequest)
+        +getCase(Long)
+        +addUpdate(Long, UpdateProgressRequest)
+        +uploadDocument(Long, MultipartFile)
+        +getMyCases(int, int, String)
+    }
+
+    class CaseService {
+        -CaseRepository caseRepository
+        -UserRepository userRepository
+        -UploadImageService uploadService
+        +createCase(Long, CreateCaseRequest)
+        +getCaseDetail(Long)
+        +addCaseUpdate(Long, Long, UpdateProgressRequest)
+        +uploadCaseDocument(Long, Long, MultipartFile)
+    }
+
+    class Case {
+        +Long caseId
+        +String title
+        +String description
+        +CaseStatus status
+        +User client
+        +User lawyer
+        +List~CaseDocument~ documents
+        +List~CaseProgressUpdate~ updates
+    }
+
+    class CaseDocument {
+        +Long docId
+        +String fileName
+        +String fileUrl
+        +User uploadedBy
+        +Case legalCase
+    }
+
+    class CaseProgressUpdate {
+        +Long updateId
+        +String title
+        +String description
+        +User createdBy
+        +Case legalCase
+    }
+
+    class User {
+        +Long userId
+        +String fullName
+        +String role
+    }
+
+    class CaseStatus {
+        <<enumeration>>
+        IN_PROGRESS
+        COMPLETED
+        CANCELLED
+    }
+
+    CaseController ..> CaseService : calls
+    CaseService ..> Case : manages
+    Case "1" *-- "many" CaseDocument : contains
+    Case "1" *-- "many" CaseProgressUpdate : contains
+    Case "many" --> "1" User : has client/lawyer
+    Case --> CaseStatus : uses
+    CaseDocument "many" --> "1" User : uploaded by
+    CaseProgressUpdate "many" --> "1" User : created by
