@@ -1,0 +1,19 @@
+sequenceDiagram
+    actor User as Luật sư / Khách hàng
+    participant FE as CaseList.jsx
+    participant Controller as CaseController
+    participant Service as CaseService
+    participant Repo as CaseRepository
+    
+    User->>FE: Truy cập "Hồ Sơ Vụ Án Của Tôi"
+    FE->>Controller: GET /api/cases (page, size, keyword)
+    Controller->>Service: getMyCases(userId, keyword, pageable)
+    Service->>Repo: Kiểm tra vai trò (Lawyer/Citizen)
+    alt là Luật sư
+        Service->>Repo: searchCasesForLawyer(userId, keyword)
+    else là Khách hàng
+        Service->>Repo: searchCasesForCitizen(userId, keyword)
+    end
+    Repo-->>Controller: Page<Case>
+    Controller-->>FE: ApiResponse<Page<CaseResponse>>
+    FE->>User: Hiển thị danh sách vụ án

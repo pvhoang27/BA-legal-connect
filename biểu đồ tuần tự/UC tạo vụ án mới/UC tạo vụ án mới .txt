@@ -1,0 +1,23 @@
+sequenceDiagram
+    actor Lawyer as Luật sư
+    participant FE as CreateCase.jsx
+    participant Controller as CaseController
+    participant Service as CaseService
+    participant Repo as CaseRepository/UserRepository
+    participant DB as Database
+
+    Lawyer->>FE: Nhập tiêu đề, mô tả và tìm khách hàng
+    FE->>Controller: GET /api/users/search (keyword)
+    Controller->>Repo: findByRoleAndKeyword
+    Repo->>DB: SQL Select
+    DB-->>FE: Trả về danh sách khách hàng
+    Lawyer->>FE: Chọn khách hàng & Nhấn "Tạo Hồ Sơ"
+    FE->>Controller: POST /api/cases (CreateCaseRequest)
+    Note over Controller: Kiểm tra quyền @PreAuthorize('LAWYER')
+    Controller->>Service: createCase(lawyerId, request)
+    Service->>Repo: findById(clientId), findById(lawyerId)
+    Service->>Repo: save(newCase)
+    Repo->>DB: SQL Insert into cases
+    DB-->>Controller: Success (201 Created)
+    Controller-->>FE: ApiResponse<CaseResponse>
+    FE->>Lawyer: Thông báo thành công & Chuyển hướng
