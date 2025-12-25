@@ -1,0 +1,16 @@
+sequenceDiagram
+    actor Lawyer as Luật sư phụ trách
+    participant FE as CaseDetail.jsx (Modal)
+    participant Controller as CaseController
+    participant Service as CaseService
+    participant Repo as CaseRepository
+
+    Lawyer->>FE: Nhập tiêu đề, mô tả tiến độ & trạng thái mới
+    FE->>Controller: POST /api/cases/{id}/updates
+    Controller->>Service: addCaseUpdate(caseId, userId, request)
+    Note over Service: Kiểm tra: userId == lawyerId của vụ án
+    Service->>Repo: save(new CaseProgressUpdate)
+    Service->>Repo: update status in Case entity
+    Repo-->>Controller: Success
+    Controller-->>FE: ApiResponse<CaseUpdateResponse>
+    FE->>Lawyer: Thông báo cập nhật thành công

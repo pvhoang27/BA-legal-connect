@@ -1,0 +1,15 @@
+sequenceDiagram
+    actor User as Luật sư / Khách hàng
+    participant FE as CaseDetail.jsx
+    participant Controller as CaseController
+    participant Service as CaseService
+    participant DB as File System
+
+    User->>FE: Nhấn "Xem trực tiếp" hoặc "Tải về"
+    FE->>Controller: GET /api/cases/{id}/documents/{docId}/view (hoặc download)
+    Controller->>Service: downloadCaseDocument(caseId, docId, userId)
+    Note over Service: Kiểm tra quyền truy cập vụ án của userId
+    Service->>DB: Truy xuất tệp từ đường dẫn vật lý
+    DB-->>Controller: Resource Stream
+    Controller-->>FE: Trả về File Content (MediaType phù hợp)
+    FE->>User: Hiển thị file trên Tab mới hoặc tải về
